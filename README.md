@@ -1,0 +1,2 @@
+# Template_GameDev_OpenGL
+OpenGLのゲーム開発テンプレートのリポジトリです。
