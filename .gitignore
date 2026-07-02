@@ -24,6 +24,8 @@ out/
 vcpkg/
 vcpkg_installed/
 
+# third party libs
+third_party/
 
 # CLion
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
