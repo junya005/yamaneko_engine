@@ -1,6 +1,6 @@
 # Template_GameDev_OpenGL
 
-OpenGLを用いたゲーム開発用のC++テンプレートリポジトリです。
+SDL2とOpenGLを用いたゲーム開発用のC++テンプレートリポジトリです。
 CMakeとvcpkgを利用して、依存関係の管理とビルドを行います。
 
 ## 前提条件
