@@ -24,7 +24,7 @@ CMake および vcpkg による依存関係管理が構成済みで、クロー�
 ### 1. リポジトリのクローン
 
 ```bat
-git clone https://github.com/YOUR_USERNAME/yamaneko_engine.git
+git clone https://github.com/junya005/yamaneko_engine.git
 cd yamaneko_engine
 ```
 
