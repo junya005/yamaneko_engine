@@ -24,8 +24,8 @@ CMake および vcpkg による依存関係管理が構成済みで、クロー�
 ### 1. リポジトリのクローン
 
 ```bat
-git clone https://github.com/YOUR_USERNAME/Template_GameDev_OpenGL.git
-cd Template_GameDev_OpenGL
+git clone https://github.com/YOUR_USERNAME/yamaneko_engine.git
+cd yamaneko_engine
 ```
 
 ### 2. vcpkg のセットアップ
@@ -81,7 +81,7 @@ cd ..
 ## ディレクトリ構成
 
 ```
-Template_GameDev_OpenGL/
+yamaneko_engine/
 ├── engine/             # エンジンコア（Window, Renderer, Input など）
 ├── src/
 │   └── main.cpp        # エントリーポイント（ここからゲームロジックを実装）
