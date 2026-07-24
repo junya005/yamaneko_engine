@@ -1,31 +1,36 @@
-# Template_GameDev_OpenGL
+# YamanekoEngine — OpenGL ゲーム開発テンプレート
 
-SDL2とOpenGLを用いたゲーム開発用のC++テンプレートリポジトリです。
-CMakeとvcpkgを利用して、依存関係の管理とビルドを行います。
+SDL2 と OpenGL を用いた C++ ゲーム開発の出発点となるテンプレートリポジトリです。
+CMake および vcpkg による依存関係管理が構成済みで、クローン後の手順に従うだけで開発を開始できます。
+
+---
 
 ## 前提条件
 
-- [Visual Studio 2022](https://visualstudio.microsoft.com/ja/vs/) (C++によるデスクトップ開発ワークロードがインストールされていること)
-- [Git](https://git-scm.com/)
-- [CMake](https://cmake.org/) (Visual Studioに同梱されているものでも可)
+| ツール | 備考 |
+|---|---|
+| [Visual Studio 2022](https://visualstudio.microsoft.com/ja/vs/) | **C++ によるデスクトップ開発** ワークロードが必要 |
+| [Git](https://git-scm.com/) | vcpkg・サードパーティライブラリのクローンに使用 |
+| CMake 3.15 以上 | Visual Studio 2022 に同梱されているものでも可 |
+
+---
 
 ## セットアップ手順
 
-本リポジトリでは `.gitignore` により、パッケージマネージャである `vcpkg` やサードパーティ製ライブラリのディレクトリ (`third_party`) が除外されています。そのため、リポジトリのクローン後に以下の手順で依存関係を手動でセットアップする必要があります。
+> [!IMPORTANT]
+> `vcpkg/` および `third_party/` は `.gitignore` により除外されています。
+> クローン後、以下の手順をすべて実施してください。
 
 ### 1. リポジトリのクローン
-
-コマンドプロンプトまたはPowerShellを開き、リポジトリをクローンしてディレクトリに移動します。
 
 ```bat
 git clone https://github.com/YOUR_USERNAME/Template_GameDev_OpenGL.git
 cd Template_GameDev_OpenGL
 ```
-*(※リポジトリのURLはご自身の環境に合わせて変更してください)*
 
 ### 2. vcpkg のセットアップ
 
-リポジトリ内に vcpkg をクローンし、ブートストラップスクリプトを実行して初期化します。
+リポジトリルートに vcpkg をクローンし、ブートストラップスクリプトで初期化します。
 
 ```bat
 git clone https://github.com/microsoft/vcpkg.git
@@ -34,16 +39,24 @@ git clone https://github.com/microsoft/vcpkg.git
 
 ### 3. 依存ライブラリのインストール
 
-vcpkg を使用して、本プロジェクトで必要なライブラリをインストールします。
+`vcpkg.json` に記載された依存パッケージをインストールします。
 
 ```bat
-.\vcpkg\vcpkg install sdl2 glad imgui[core,sdl2-binding,opengl3-binding] assimp opengl
+.\vcpkg\vcpkg install
 ```
 
-### 4. サードパーティ・ライブラリ (third_party) のセットアップ
+<details>
+<summary>手動で個別インストールする場合</summary>
 
-本プロジェクトでは、ヘッダーオンリーのアニメーションライブラリである `tweeny` を使用しています。
-`third_party` ディレクトリを作成し、そこにリポジトリをクローンします。
+```bat
+.\vcpkg\vcpkg install sdl2 sdl2-image sdl2-ttf glad imgui assimp opengl
+```
+
+</details>
+
+### 4. サードパーティライブラリのセットアップ
+
+ヘッダーオンリーのトゥイーンライブラリ [tweeny](https://github.com/mobius3/tweeny) をクローンします。
 
 ```bat
 mkdir third_party
@@ -52,18 +65,63 @@ git clone https://github.com/mobius3/tweeny.git
 cd ..
 ```
 
-### 5. プロジェクトのビルドと実行
+### 5. Visual Studio 2022 でビルド・実行
 
-1. Visual Studio 2022 を起動します。
-2. 「ローカルフォルダーを開く (Open a local folder)」を選択し、クローンした `Template_GameDev_OpenGL` フォルダを選択します。
-3. リポジトリに含まれている `CMakeSettings.json` が読み込まれ、自動的に vcpkg のツールチェーンファイルを使用した構成 (`Windows x64 (vcpkg)`) がセットアップされます。
-4. CMakeのキャッシュ生成が完了したら、ツールバーから `Template_GameDev_OpenGL.exe` を選択し、スタートボタン（または `F5` キー）を押してビルドと実行を行います。
+1. Visual Studio 2022 を起動する
+2. **「ローカルフォルダーを開く」** でリポジトリルートフォルダーを選択する
+3. リポジトリ内の `CMakeSettings.json` が自動で読み込まれ、**Windows x64 (vcpkg)** 構成が使用される
+4. CMake キャッシュの生成完了後、スタートアップアイテムとして **`YamanekoEngine.exe`** を選択する
+5. **F5** キーを押してビルドと実行を行う
 
-## 使用している主なライブラリ
+> [!NOTE]
+> ビルド時に `assets/` フォルダーが実行ファイルと同じディレクトリへ自動コピーされます。
 
-- [SDL2](https://www.libsdl.org/) - ウィンドウ作成・入力処理
-- [glad](https://glad.dav1d.de/) - OpenGL関数のローディング
-- [Dear ImGui](https://github.com/ocornut/imgui) - デバッグ・ツール用GUI
-- [Assimp](https://github.com/assimp/assimp) - 3Dモデル読み込み
-- [OpenGL](https://www.opengl.org/) - グラフィックスAPI
-- [tweeny](https://github.com/mobius3/tweeny) - トゥイーンアニメーション
+---
+
+## ディレクトリ構成
+
+```
+Template_GameDev_OpenGL/
+├── engine/             # エンジンコア（Window, Renderer, Input など）
+├── src/
+│   └── main.cpp        # エントリーポイント（ここからゲームロジックを実装）
+├── assets/             # ゲームアセット（画像・フォントなど）
+├── docs/               # ドキュメント
+├── third_party/        # サードパーティライブラリ（要セットアップ、gitignore 対象）
+├── vcpkg/              # パッケージマネージャー（要セットアップ、gitignore 対象）
+├── CMakeLists.txt      # ビルド定義
+├── CMakeSettings.json  # Visual Studio 向け CMake プリセット
+└── vcpkg.json          # 依存パッケージ定義
+```
+
+---
+
+## 新しいプロジェクトへのカスタマイズ
+
+`src/main.cpp` の以下の定数を変更するとプロダクト名とウィンドウサイズを設定できます。
+
+```cpp
+const char PRODUCT_NAME[] = "My Product";   // ウィンドウタイトル
+const int WINDOW_WIDTH  = 1280;
+const int WINDOW_HEIGHT = 720;
+```
+
+---
+
+## 使用ライブラリ
+
+| ライブラリ | 用途 |
+|---|---|
+| [SDL2](https://www.libsdl.org/) | ウィンドウ作成・イベント処理 |
+| [SDL2_image](https://github.com/libsdl-org/SDL_image) | 画像読み込み |
+| [SDL2_ttf](https://github.com/libsdl-org/SDL_ttf) | フォント・テキスト描画 |
+| [glad](https://glad.dav1d.de/) | OpenGL 関数ローダー |
+| [Dear ImGui](https://github.com/ocornut/imgui) | デバッグ・ツール用 GUI |
+| [Assimp](https://github.com/assimp/assimp) | 3D モデル読み込み |
+| [tweeny](https://github.com/mobius3/tweeny) | トゥイーンアニメーション |
+
+---
+
+## ライセンス
+
+[LICENSE](./LICENSE) を参照してください。
