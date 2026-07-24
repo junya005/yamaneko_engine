@@ -17,6 +17,12 @@ CMake および vcpkg による依存関係管理が構成済みで、クロー�
 
 ## セットアップ手順
 
+このエンジンは、テンプレートとして動作します。
+リポジトリページの右上の [Use this template] ボタンをクリックします。
+それから、リポジトリ名を入力してこのテンプレートをベースにしたリポジトリを作成してください。
+
+以下に、クローンしてローカルでセットアップする手順を示します。
+
 > [!IMPORTANT]
 > `vcpkg/` および `third_party/` は `.gitignore` により除外されています。
 > クローン後、以下の手順をすべて実施してください。
@@ -24,8 +30,8 @@ CMake および vcpkg による依存関係管理が構成済みで、クロー�
 ### 1. リポジトリのクローン
 
 ```bat
-git clone https://github.com/junya005/yamaneko_engine.git
-cd yamaneko_engine
+git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORYNAME.git
+cd YOUR_REPOSITORYNAME
 ```
 
 ### 2. vcpkg のセットアップ
