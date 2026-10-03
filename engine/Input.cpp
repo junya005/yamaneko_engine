@@ -1,23 +1,13 @@
-#include "Input.h"
+﻿#include "Input.h"
 
 namespace Engine
 {
-	Input* Input::s_instance = nullptr;
-
 	Input::Input() : m_keyboard_state(nullptr) {
 		m_keyboard_state = SDL_GetKeyboardState(nullptr);
-		s_instance = this;
 	}
 
 	Input::~Input() {
-		if (s_instance == this) {
-			s_instance = nullptr;
-		}
-	}
 
-	void Input::Initialize() {
-		static Input defaultInput;
-		s_instance = &defaultInput;
 	}
 
 	void Input::BeginFrame() {
@@ -32,44 +22,17 @@ namespace Engine
 		}
 	}
 
-	bool Input::IsKey(SDL_Scancode scancode) const {
+	bool Input::GetKey(SDL_Scancode scancode) const {
 		if (m_keyboard_state) {
 			return m_keyboard_state[scancode] != 0;
 		}
 		return false;
 	}
 
-	bool Input::IsKeyDown(SDL_Keycode keycode) const {
+	bool Input::GetKeyDown(SDL_KeyCode keycode) const {
 		auto it = m_key_downs.find(keycode);
 		if (it != m_key_downs.end()) {
 			return it->second;
-		}
-		return false;
-	}
-
-	void Input::OnBeginFrame() {
-		if (s_instance) {
-			s_instance->BeginFrame();
-		}
-	}
-
-	void Input::OnProcessEvent(const SDL_Event& e) {
-		if (s_instance) {
-			s_instance->ProcessEvent(e);
-		}
-	}
-
-	bool Input::GetKey(SDL_Scancode scancode) {
-		if (s_instance) {
-			return s_instance->IsKey(scancode);
-		}
-		const Uint8* state = SDL_GetKeyboardState(nullptr);
-		return state ? (state[scancode] != 0) : false;
-	}
-
-	bool Input::GetKeyDown(SDL_Keycode keycode) {
-		if (s_instance) {
-			return s_instance->IsKeyDown(keycode);
 		}
 		return false;
 	}
