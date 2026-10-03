@@ -1,5 +1,4 @@
 ﻿#include "TextRenderer.h"
-#include "Renderer.h"
 
 namespace Engine {
 	TextRenderer::TextRenderer(): m_is_initialized(false){
@@ -28,7 +27,7 @@ namespace Engine {
 	}
 
 	// 自由な文字列を描画する関数
-	void TextRenderer::DrawText(Renderer &renderer, TTF_Font* font, const std::string& text, int x, int y, SDL_Color color) {
+	void TextRenderer::DrawTextBySDL(Renderer &renderer, TTF_Font* font, const std::string& text, int x, int y, SDL_Color color) {
 		if (text.empty()) return;
 
 		// 文字列からサーフェスを作成 (日本語などの場合は UTF8 を使用)
