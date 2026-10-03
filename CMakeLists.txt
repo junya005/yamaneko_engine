@@ -42,10 +42,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     OpenGL::GL
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE 
-    third_party/tweeny/include
-)
-
 # 注意: assetsディレクトリが存在しない場合、コピーは失敗します。事前にassetsディレクトリを作成してください。
 add_custom_command(
     TARGET ${TARGET_NAME} POST_BUILD
