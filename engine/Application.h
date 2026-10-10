@@ -7,188 +7,119 @@
 #include "Config.h"
 #include "Scene.h"
 #include "SceneManager.h"
+#include <string>
 
 namespace Engine {
 
 	/// <summary>
-	/// SDL2、OpenGL、GLAD、ImGuiの初期化・終了処理、および毎フレームのゲームループ実行を一元管理するための抽象基底クラスです。
+	/// エンジン全体のサブシステム（SDL、OpenGL、GLAD、ImGui、Window、Time、Input、AssetManager等）を一括初期化します。
 	/// </summary>
+	/// <param name="title">ウィンドウのタイトルバーに表示される文字列</param>
+	/// <param name="width">ウィンドウの横幅（ピクセル単位、既定値: 1280）</param>
+	/// <param name="height">ウィンドウの縦幅（ピクセル単位、既定値: 720）</param>
+	/// <param name="vsync">垂直同期を有効にするか（既定値: true）</param>
+	/// <returns>初期化に成功した場合は true、失敗した場合は false</returns>
 	/// <remarks>
-	/// ゲーム側はこのクラスを継承して派生クラス（例: GameApp）を定義し、仮想フック（OnInit, OnUpdate 等）をオーバーライドして固有処理を記述します。
 	/// <code>
-	/// class MyGameApp : public Engine::Application {
-	/// public:
-	///     MyGameApp() : Application({ .title = "My Game", .windowWidth = 1280, .windowHeight = 720 }) {}
-	/// protected:
-	///     bool OnInit() override {
-	///         // 初期シーンの設定など
-	///         return true;
-	///     }
-	///     void OnUpdate(float deltaTime) override {
-	///         // 毎フレームの更新ロジック
-	///     }
-	/// };
-	/// 
-	/// int main(int argc, char* argv[]) {
-	///     MyGameApp app;
-	///     return app.Run();
+	/// if (!Engine::Init("My Game", 1280, 720)) {
+	///     return -1;
 	/// }
 	/// </code>
 	/// </remarks>
-	class Application {
-	public:
-		/// <summary>
-		/// アプリケーション初期設定情報を受け取り、インスタンスを構築するために存在します。
-		/// </summary>
-		/// <param name="config">ウィンドウタイトルや解像度、クリアカラーなどの初期設定データ</param>
-		/// <remarks>
-		/// <code>
-		/// // 派生クラスのメンバ初期化子から設定を注入する例
-		/// MyGameApp() : Application({
-		///     .title = "Sample Game",
-		///     .windowWidth = 1920,
-		///     .windowHeight = 1080,
-		///     .vsync = true
-		/// }) {}
-		/// </code>
-		/// </remarks>
-		explicit Application(const AppConfigData& config = AppConfigData{});
+	bool Init(const std::string& title = "Template Game", int width = 1280, int height = 720, bool vsync = true);
 
-		/// <summary>
-		/// アプリケーションインスタンスを破棄し、静的インスタンス参照をクリアします。
-		/// </summary>
-		/// <remarks>
-		/// <code>
-		/// // アプリケーション終了時に自動的に破棄されます
-		/// </code>
-		/// </remarks>
-		virtual ~Application();
+	/// <summary>
+	/// エンジン全体のサブシステムおよび確保されたリソースを安全に解放・シャットダウンします。
+	/// </summary>
+	/// <remarks>
+	/// <code>
+	/// Engine::Shutdown();
+	/// </code>
+	/// </remarks>
+	void Shutdown();
 
-		/// <summary>
-		/// 全サブシステムの初期化を実行し、終了要求（Quit）があるまでメインゲームループを反復駆動するために存在します。
-		/// </summary>
-		/// <returns>正常終了時は 0、初期化失敗などのエラー時は -1</returns>
-		/// <remarks>
-		/// <code>
-		/// int main(int argc, char* argv[]) {
-		///     GameApp app;
-		///     return app.Run();
-		/// }
-		/// </code>
-		/// </remarks>
-		int Run();
+	/// <summary>
+	/// SDLイベントのポーリング、Inputの更新、Time（DeltaTime）の更新を一括で処理します。
+	/// 終了要求（ウィンドウの閉じるボタン押下や Quit() 呼び出し）があった場合は false を返します。
+	/// </summary>
+	/// <returns>ゲームループを継続する場合は true、終了する場合は false</returns>
+	/// <remarks>
+	/// <code>
+	/// while (Engine::ProcessEvents()) {
+	///     // 毎フレームのロジック・描画処理
+	/// }
+	/// </code>
+	/// </remarks>
+	bool ProcessEvents();
 
-		/// <summary>
-		/// 現在実行中のメインゲームループに対して安全な終了フラグをセットするために存在します。
-		/// </summary>
-		/// <remarks>
-		/// <code>
-		/// // Escキー押下時や終了ボタン押下時に呼び出す例
-		/// if (Engine::Input::GetKeyDown(SDLK_ESCAPE)) {
-		///     Engine::Application::Get()->Quit();
-		/// }
-		/// </code>
-		/// </remarks>
-		void Quit();
+	/// <summary>
+	/// 画面バッファを指定された色でクリアします。
+	/// </summary>
+	/// <param name="r">赤成分（0.0f ～ 1.0f、既定値: 0.1f）</param>
+	/// <param name="g">緑成分（0.0f ～ 1.0f、既定値: 0.12f）</param>
+	/// <param name="b">青成分（0.0f ～ 1.0f、既定値: 0.15f）</param>
+	/// <param name="a">アルファ成分（0.0f ～ 1.0f、既定値: 1.0f）</param>
+	/// <remarks>
+	/// <code>
+	/// Engine::Clear(0.1f, 0.12f, 0.15f, 1.0f);
+	/// </code>
+	/// </remarks>
+	void Clear(float r = 0.1f, float g = 0.12f, float b = 0.15f, float a = 1.0f);
 
-		/// <summary>
-		/// 現在実行中の Application インスタンスへのポインタを取得します。
-		/// </summary>
-		/// <returns>現在有効な Application インスタンス。未生成時は nullptr</returns>
-		/// <remarks>
-		/// <code>
-		/// Engine::Application* app = Engine::Application::Get();
-		/// if (app) {
-		///     app->Quit();
-		/// }
-		/// </code>
-		/// </remarks>
-		static Application* Get() { return s_instance; }
+	/// <summary>
+	/// ImGui の新しい描画フレームを開始します（ImGui_ImplOpenGL3_NewFrame 等を呼び出します）。
+	/// ImGui BackgroundDrawList によるゲーム描画や ImGui ウィジェット描画を行う前に呼び出してください。
+	/// </summary>
+	/// <remarks>
+	/// <code>
+	/// Engine::BeginImGui();
+	/// // 描画処理や UI ウィジェット構築
+	/// Engine::EndImGui();
+	/// </code>
+	/// </remarks>
+	void BeginImGui();
 
-	protected:
-		/// <summary>
-		/// エンジン初期化完了後、ゲームループ開始直前にゲーム固有の初期化（リソース確保や初期シーン遷移等）を行うための仮想フックです。
-		/// </summary>
-		/// <returns>初期化に成功した場合は true、失敗してアプリを終了する場合は false</returns>
-		/// <remarks>
-		/// <code>
-		/// bool OnInit() override {
-		///     Engine::SceneManager::ChangeScene<TitleScene>();
-		///     return true;
-		/// }
-		/// </code>
-		/// </remarks>
-		virtual bool OnInit() { return true; }
+	/// <summary>
+	/// ImGui の描画コマンドを発行・レンダリングします（ImGui::Render およびバックエンド描画発行）。
+	/// </summary>
+	/// <remarks>
+	/// <code>
+	/// Engine::EndImGui();
+	/// </code>
+	/// </remarks>
+	void EndImGui();
 
-		/// <summary>
-		/// ゲームループ終了後、エンジンリソース破棄直前にゲーム固有の終了処理（解放等）を行うための仮想フックです。
-		/// </summary>
-		/// <remarks>
-		/// <code>
-		/// void OnShutdown() override {
-		///     // ゲーム固有リソースの解放処理
-		/// }
-		/// </code>
-		/// </remarks>
-		virtual void OnShutdown() {}
+	/// <summary>
+	/// バックバッファとフロントバッファをスワップし、描画内容を画面へ反映します。
+	/// </summary>
+	/// <remarks>
+	/// <code>
+	/// Engine::Present();
+	/// </code>
+	/// </remarks>
+	void Present();
 
-		/// <summary>
-		/// 毎フレームのロジック更新処理を行うための仮想フックです。
-		/// </summary>
-		/// <param name="deltaTime">前フレームからの経過時間（秒単位）</param>
-		/// <remarks>
-		/// <code>
-		/// void OnUpdate(float deltaTime) override {
-		///     // 時間経過に応じたオブジェクト移動や状態監視
-		/// }
-		/// </code>
-		/// </remarks>
-		virtual void OnUpdate(float deltaTime) { (void)deltaTime; }
+	/// <summary>
+	/// 現在実行中のメインループに対して終了フラグをセットします（次回の ProcessEvents() が false を返します）。
+	/// </summary>
+	/// <remarks>
+	/// <code>
+	/// if (Engine::Input::GetKeyDown(SDLK_ESCAPE)) {
+	///     Engine::Quit();
+	/// }
+	/// </code>
+	/// </remarks>
+	void Quit();
 
-		/// <summary>
-		/// 画面クリア直後、ImGui描画前に生OpenGL描画（3Dモデル描画やカスタムシェーダー描画）を行うための仮想フックです。
-		/// </summary>
-		/// <remarks>
-		/// <code>
-		/// void OnRender() override {
-		///     // OpenGLによる直接メッシュ描画処理
-		/// }
-		/// </code>
-		/// </remarks>
-		virtual void OnRender() {}
-
-		/// <summary>
-		/// ImGuiのフレーム開始後、ImGui描画発行前にUI要素を構築・描画するための仮想フックです。
-		/// </summary>
-		/// <remarks>
-		/// <code>
-		/// void OnImGuiRender() override {
-		///     ImGui::Begin("Status Window");
-		///     ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
-		///     ImGui::End();
-		/// }
-		/// </code>
-		/// </remarks>
-		virtual void OnImGuiRender() {}
-
-	private:
-		/// <summary>低レベルライブラリ群（SDL, OpenGL, GLAD, ImGui）および全サブシステムの初期化を内部実行します。</summary>
-		bool Initialize();
-
-		/// <summary>全サブシステムおよびライブラリを適切な逆順で解放・シャットダウンします。</summary>
-		void Shutdown();
-
-		/// <summary>起動時にコンストラクタへ渡されたアプリケーション初期設定データ</summary>
-		AppConfigData m_initialConfig;
-
-		/// <summary>メインゲームループが継続中かを示す実行制御フラグ</summary>
-		bool m_isRunning = false;
-
-		/// <summary>本アプリケーションが所有するメインウィンドウおよびコンテキスト管理インスタンス</summary>
-		Window m_window;
-
-		/// <summary>シングルトンアクセス用の静的インスタンス参照ポインタ</summary>
-		static Application* s_instance;
-	};
+	/// <summary>
+	/// メインゲームループが現在実行中であるかを取得します。
+	/// </summary>
+	/// <returns>実行中であれば true、終了フラグが立っていれば false</returns>
+	/// <remarks>
+	/// <code>
+	/// bool running = Engine::IsRunning();
+	/// </code>
+	/// </remarks>
+	bool IsRunning();
 
 }

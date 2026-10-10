@@ -8,9 +8,18 @@
 /// <code>
 /// #include "Engine.h"
 /// 
-/// class MyGame : public Engine::Application {
-///     // ...
-/// };
+/// int main(int argc, char* argv[]) {
+///     Engine::Init("My Game", 1280, 720);
+///     while (Engine::ProcessEvents()) {
+///         Engine::Clear();
+///         Engine::BeginImGui();
+///         // ゲーム描画・UI
+///         Engine::EndImGui();
+///         Engine::Present();
+///     }
+///     Engine::Shutdown();
+///     return 0;
+/// }
 /// </code>
 /// </remarks>
 

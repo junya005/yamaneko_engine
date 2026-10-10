@@ -104,12 +104,11 @@ yamaneko_engine/
 
 ## 新しいプロジェクトへのカスタマイズ
 
-`src/main.cpp` の以下の定数を変更するとプロダクト名とウィンドウサイズを設定できます。
+`src/main.cpp` の `Engine::Init()` の引数を変更すると、プロダクト名とウィンドウサイズを設定できます。
 
 ```cpp
-const char PRODUCT_NAME[] = "My Product";   // ウィンドウタイトル
-const int WINDOW_WIDTH  = 1280;
-const int WINDOW_HEIGHT = 720;
+// ウィンドウタイトル、横幅、縦幅の指定
+Engine::Init("My Product", 1280, 720);
 ```
 
 ---

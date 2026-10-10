@@ -1,5 +1,3 @@
-﻿target_sources(${PROJECT_NAME} PRIVATE
-    GameApp.h
-    GameApp.cpp
+target_sources(${PROJECT_NAME} PRIVATE
     main.cpp
 )
